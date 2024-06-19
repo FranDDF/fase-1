@@ -2,6 +2,7 @@ package almacenUsuario;
 
 import java.util.Scanner;
 
+import implemDAO.Carrito;
 import implemDAO.ClientesDAO;
 import implemDAO.ProductosDAO;
 import modelosDB.Clientes;
@@ -14,6 +15,7 @@ public class MenuComprador {
 		Scanner input = new Scanner(System.in);
 		ClientesDAO daoC = new ClientesDAO();
 		ProductosDAO daoP = new ProductosDAO();
+		Carrito carrito = new Carrito();
 		int opcion;
 
 		do {
@@ -23,7 +25,9 @@ public class MenuComprador {
 			System.out.println("3. Comprar un producto.");
 			System.out.println("4. Mostrar un producto a partir de su Id.");
 			System.out.println("5. Modificar datos personales.");
-			System.out.println("6. Salir del menú.");
+			System.out.println("6. Mostrar carrito.");
+			System.out.println("7. Vaciar carrito.");
+			System.out.println("8. Salir del menú.");
 			opcion = Valid.leerInt(input, "Indique una opción:");
 
 			switch (opcion) {
@@ -48,15 +52,13 @@ public class MenuComprador {
 				redireccionMenu();
 				break;
 			case 3:
-				double totalVenta = 0;
 				int idProducto = Valid.leerInt(input, "Indique el id del producto que desea comprar:");
 				int cantidad = Valid.leerInt(input, "Indique la cantidad que desea comprar:");
 				Productos producto = daoP.filtrarIdP(idProducto);
 
 				if (cantidad <= producto.getStock()) {
 					daoP.decrementarStock(idProducto, cantidad);
-					totalVenta += cantidad * producto.getPrecioVenta();
-					System.out.println("Total a abonar: $" + totalVenta);
+					carrito.agregarProducto(producto);
 				} else {
 					System.out.println(
 							"La cantidad indicada supera el stock disponible. Seleccione la opción 2 o 4 del menú para ver el stock actual.");
@@ -91,13 +93,21 @@ public class MenuComprador {
 				redireccionMenu();
 				break;
 			case 6:
+				carrito.mostrarCarrito();
+				redireccionMenu();
+				break;
+			case 7:
+				carrito.vaciarCarrito();
+				redireccionMenu();
+				break;
+			case 8:
 				System.out.println("[FIN]");
 				break;
 			default:
 				System.out.println("Indique una opción válida.");
 			}
 
-		} while (opcion != 6);
+		} while (opcion != 8);
 		input.close();
 	}
 
